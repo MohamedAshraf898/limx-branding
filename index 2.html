@@ -3,9 +3,10 @@
 
 <head>
   <title>Pimx</title>
+  <script>document.documentElement.classList.add('is-loading');</script>
 </head>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Phudu:wght@400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Phudu:wght@400;500;600;700;800;900&family=Alexandria:wght@700;800&display=swap');
 
   :root {
     --cream: #ece7d4;
@@ -760,9 +761,110 @@
       height: 200vh;
     }
   }
+
+  /* ---------- intro loader ---------- */
+  .loader {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .is-loading .loader {
+    display: block;
+    pointer-events: auto;
+  }
+
+  .is-loading body {
+    overflow: hidden;
+  }
+
+  .loader-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+  }
+
+  .loader-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50.5vh;
+    background: #fb452f;
+    will-change: transform;
+  }
+
+  .loader-panel.top {
+    top: 0;
+  }
+
+  .loader-panel.bottom {
+    bottom: 0;
+  }
+
+  .loader-logo,
+  .loader-sub {
+    position: absolute;
+    left: 50%;
+    will-change: transform;
+  }
+
+  .loader-logo {
+    top: 50%;
+    display: flex;
+    align-items: flex-start;
+    gap: .22em;
+    color: #fff;
+    font-family: 'Alexandria', 'Phudu', sans-serif;
+    font-size: clamp(40px, 7.5vw, 124px);
+    font-weight: 800;
+    line-height: 1.25;
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+  }
+
+  .loader-logo .ch {
+    display: inline-block;
+    opacity: 0;
+  }
+
+  .loader-logo .flip {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+
+  .loader-logo .reg {
+    font-family: Arial, sans-serif;
+    font-size: .26em;
+    font-weight: 400;
+    margin: .3em -.05em 0 0;
+    opacity: 0;
+  }
+
+  .loader-sub {
+    /* just under the shrunk logo: half its line box at 0.4 scale, plus a gap */
+    top: calc(50% + clamp(40px, 7.5vw, 124px) * .25 + 8px);
+    color: rgba(255, 255, 255, .8);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, 0);
+  }
 </style>
 
 <body>
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader-dim"></div>
+    <div class="loader-panel top"></div>
+    <div class="loader-panel bottom"></div>
+    <div class="loader-logo" id="loaderLogo" dir="rtl" lang="ar">
+      <span class="ch">بيمكس</span><span class="ch">براندينج</span><span class="reg">&reg;</span>
+    </div>
+    <div class="loader-sub" id="loaderSub">Creative digital studio</div>
+  </div>
   <div class="noir">
     <div class="edge-tick left"></div>
     <div class="edge-tick right"></div>
@@ -992,4 +1094,63 @@
   document.querySelector('.burger').addEventListener('click', () => {
     document.querySelector('.nav-links').classList.toggle('open');
   });
+  // intro loader: letters rise in, logo shrinks, then the red splits open from the middle
+  (function () {
+    const root = document.documentElement;
+    const loader = document.getElementById('loader');
+    const done = () => { root.classList.remove('is-loading'); loader.remove(); };
+    if (!loader.animate || matchMedia('(prefers-reduced-motion: reduce)').matches) { done(); return; }
+
+    const logo = document.getElementById('loaderLogo');
+    const sub = document.getElementById('loaderSub');
+    const letters = logo.querySelectorAll('.ch');
+    const reg = logo.querySelector('.reg');
+    const [top, bottom] = loader.querySelectorAll('.loader-panel');
+    const dim = loader.querySelector('.loader-dim');
+    const outQuint = 'cubic-bezier(.22, 1, .36, 1)';
+    const inOut = 'cubic-bezier(.65, 0, .35, 1)';
+    const inExpo = 'cubic-bezier(.7, 0, .84, 0)';
+    const SMALL = 0.4;         // logo scale while the subtitle is shown
+    const OPEN_AT = 1100;      // ms: when the red splits open
+    const OPEN_FOR = 560;
+
+    function play() {
+      letters.forEach((el, i) => el.animate(
+        [{ opacity: 0, transform: 'translateY(.35em)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 420, delay: i * 160, easing: outQuint, fill: 'forwards' }));
+      reg.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }],
+        { duration: 360, delay: 440, easing: outQuint, fill: 'forwards' });
+
+      // shrink, then grow back while flying up with the top half
+      logo.animate([
+        { transform: 'translate(-50%, -50%) scale(1)', offset: 0 },
+        { transform: 'translate(-50%, -50%) scale(1)', offset: 340 / (OPEN_AT + OPEN_FOR) },
+        { transform: `translate(-50%, -50%) scale(${SMALL})`, offset: 820 / (OPEN_AT + OPEN_FOR), easing: 'linear' },
+        { transform: `translate(-50%, -50%) scale(${SMALL})`, offset: OPEN_AT / (OPEN_AT + OPEN_FOR) },
+        { transform: 'translate(-50%, calc(-50% - 100vh)) scale(1)', offset: 1 }
+      ].map((k, i) => ({ ...k, easing: i === 1 ? inOut : i === 3 ? inExpo : 'linear' })),
+        { duration: OPEN_AT + OPEN_FOR, fill: 'forwards' });
+
+      sub.animate([{ opacity: 0 }, { opacity: 1 }],
+        { duration: 400, delay: 560, easing: 'ease-out', fill: 'forwards' });
+      sub.animate([{ transform: 'translate(-50%, 0) scale(1)' }, { transform: 'translate(-50%, 100vh) scale(1.6)' }],
+        { duration: OPEN_FOR, delay: OPEN_AT, easing: inExpo, fill: 'forwards' });
+
+      top.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-100%)' }],
+        { duration: OPEN_FOR, delay: OPEN_AT, easing: inExpo, fill: 'forwards' });
+      const last = bottom.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(100%)' }],
+        { duration: OPEN_FOR, delay: OPEN_AT, easing: inExpo, fill: 'forwards' });
+
+      last.finished.then(() => {
+        root.classList.remove('is-loading');   // let the page scroll as soon as it is visible
+        dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: 'ease-out', fill: 'forwards' })
+          .finished.then(done);
+      });
+    }
+
+    // wait for the Arabic font so the words don't swap fonts mid-animation, but never hang on it
+    const fontsReady = document.fonts ? document.fonts.load("800 1em Alexandria", 'بيمكس') : Promise.resolve();
+    Promise.race([fontsReady.catch(() => {}), new Promise(r => setTimeout(r, 1500))])
+      .then(() => requestAnimationFrame(play));
+  })();
 </script>
