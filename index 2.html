@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Pimx</title>
+</head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Phudu:wght@400;500;600;700;800;900&display=swap');
+
+  :root {
+    --cream: #ece7d4;
+    --ink: #141311;
+    --muted: #6b6a60;
+    --accent: #db3722;
+    --hero-ink: #f4f2ea;
+    --hero-dim: rgba(244, 242, 234, 0.55);
+    --line: rgba(20, 19, 17, 0.14);
+    --line-hero: rgba(244, 242, 234, 0.22);
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Phudu', 'Phudu Placeholder', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  .noir {
+    position: relative;
+  }
+
+  /* ---------- edge ticks ---------- */
+  .edge-tick {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 18px;
+    z-index: 150;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(to bottom,
+        #fff 0px, #fff 1px,
+        transparent 1px, transparent 40px),
+      repeating-linear-gradient(to bottom,
+        #fff 0px, #fff 1px,
+        transparent 1px, transparent 8px);
+    background-size: 100% 40px, 100% 8px;
+    background-position: left center, left center;
+    background-repeat: repeat-y;
+    mix-blend-mode: difference;
+    opacity: 0.55;
+  }
+
+  .edge-tick.left {
+    left: 0;
+  }
+
+  .edge-tick.right {
+    right: 0;
+    background-position: right center, right center;
+  }
+
+  @media (max-width:700px) {
+    .edge-tick {
+      display: none;
+    }
+  }
+
+  /* ---------- nav ---------- */
+  .site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px clamp(20px, 4vw, 54px);
+    color: #fff;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, .35);
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .logo {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 1px;
+  }
+
+  .logo .flip {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+
+  .nav-home {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    letter-spacing: .03em;
+    font-weight: 500;
+  }
+
+  .nav-home svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .nav-links {
+    display: contents;
+  }
+
+  .nav-links a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    letter-spacing: .03em;
+    font-weight: 500;
+  }
+
+  .nav-links .count {
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    transform: translateY(-4px);
+  }
+
+  .roll {
+    display: inline-block;
+    overflow: hidden;
+    height: 1.2em;
+    vertical-align: top;
+  }
+
+  .roll .stack {
+    display: flex;
+    flex-direction: column;
+    transition: transform .45s cubic-bezier(.65, 0, .35, 1);
+  }
+
+  .roll:hover .stack {
+    transform: translateY(-1.2em);
+  }
+
+  .roll .stack span {
+    line-height: 1.2em;
+  }
+
+  @media (max-width:860px) {
+    .nav-links {
+      display: none;
+    }
+
+    .nav-links.open {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 28px;
+      padding: 0 32px;
+      background: #0a0908;
+      font-size: 28px;
+      z-index: 200;
+    }
+  }
+
+  .burger {
+    display: none;
+    width: 34px;
+    height: 34px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .burger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+  }
+
+  @media (max-width:860px) {
+    .burger {
+      display: flex;
+    }
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+    padding: clamp(84px, 9vh, 120px) clamp(20px, 7vw, 108px) clamp(16px, 3vh, 32px);
+    color: var(--hero-ink);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    background-color: #000000;
+    /* background: url("qVLCuipFwGyCTP6xVnctvl1b38A.mp4"); */
+    animation: drift 24s ease-in-out infinite alternate;
+    background-size: 100% 100%;
+    cursor: auto;
+    width: 100%;
+    height: 100%;
+    border-radius: 0px;
+    display: block;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+
+  @keyframes drift {
+    0% {
+      background-position: 0% 0%;
+      filter: saturate(1);
+    }
+
+    100% {
+      background-position: 12% 8%;
+      filter: saturate(1.12);
+    }
+  }
+
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(0deg, rgba(6, 5, 4, .7) 0%, rgba(6, 5, 4, 0) 32%),
+      linear-gradient(180deg, rgba(6, 5, 4, .5) 0%, rgba(6, 5, 4, 0) 20%),
+      radial-gradient(120% 90% at 50% 100%, rgba(0, 0, 0, .35), transparent 60%);
+  }
+
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: .2;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    letter-spacing: .1em;
+    font-weight: 500;
+    opacity: 0;
+    animation: rise .8s .15s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .badge .spark {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+    animation: spin 7s linear infinite;
+    flex: none;
+  }
+
+  .thumb-stack {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(6px, 1vh, 10px);
+  }
+
+  .thumb {
+    width: clamp(30px, 5.5vh, 56px);
+    height: clamp(30px, 5.5vh, 56px);
+    border-radius: 7px;
+    flex: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    animation: rise .7s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .thumb:nth-child(1) {
+    background: linear-gradient(150deg, #8fc2e0 0%, #e6899f 45%, #f2a53c 100%);
+    animation-delay: .1s;
+  }
+
+  .thumb:nth-child(2) {
+    background: radial-gradient(circle at 30% 25%, #f6b23e, #7a2b0e 75%);
+    animation-delay: .22s;
+  }
+
+  .thumb:nth-child(3) {
+    background: radial-gradient(circle at 65% 30%, #8fc7e6, #152435 75%);
+    animation-delay: .34s;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.7rem, 1vw + 4vh, 3.9rem);
+    font-weight: 500;
+    line-height: .98;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    max-width: 16ch;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .hero-headline span {
+    display: block;
+    opacity: 0;
+    transform: translateY(110%);
+    animation: riseText .9s cubic-bezier(.2, .75, .2, 1) forwards;
+  }
+
+  .hero-headline span:nth-child(1) {
+    animation-delay: .28s;
+  }
+
+  .hero-headline span:nth-child(2) {
+    animation-delay: .38s;
+  }
+
+  .hero-headline span:nth-child(3) {
+    animation-delay: .48s;
+  }
+
+  .hero-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .hero-brand {
+    opacity: 0;
+    animation: rise .8s .5s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .hero-brand .wordmark {
+    font-size: clamp(18px, 3vh, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .hero-brand .wordmark .flip {
+    display: inline-block;
+    transform: scaleX(-1);
+  }
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .stars {
+    color: var(--accent);
+    letter-spacing: 2px;
+    font-size: 13px;
+  }
+
+  .trusted {
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: var(--hero-dim);
+    font-weight: 500;
+  }
+
+  .hero-copy {
+    max-width: 280px;
+    font-size: clamp(11px, 1.8vh, 14px);
+    line-height: 1.45;
+    color: var(--hero-dim);
+    opacity: 0;
+    animation: rise .8s .6s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .cta-row {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+    opacity: 0;
+    animation: rise .8s .7s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .cta-label {
+    font-size: 13px;
+    letter-spacing: .08em;
+    font-weight: 500;
+  }
+
+  .cta-pill {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 8px 6px 6px;
+    font-size: 12px;
+    letter-spacing: .05em;
+    font-weight: 500;
+    transition: filter .2s ease, transform .2s ease;
+  }
+
+  .cta-pill:hover {
+    filter: brightness(1.08);
+    transform: translateX(2px);
+  }
+
+  .cta-pill .dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f6d9c4, #8a5a3a 70%);
+    flex: none;
+  }
+
+  .cta-pill svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .hero-meta {
+    position: relative;
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+    padding-top: clamp(10px, 1.8vh, 18px);
+    border-top: 1px solid var(--line-hero);
+    font-size: 11px;
+    letter-spacing: .08em;
+    font-weight: 500;
+    color: var(--hero-dim);
+    opacity: 0;
+    animation: rise .8s .8s cubic-bezier(.2, .7, .2, 1) forwards;
+  }
+
+  .hero-meta .clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: end;
+  }
+
+  .hero-meta .clock .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+
+  @media (max-width:600px) {
+    .hero-meta {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-meta .clock {
+      justify-self: start;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes riseText {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: .25;
+    }
+  }
+
+  /* ---------- split / scale-up transition ---------- */
+  .split-wrap {
+    height: 260vh;
+    position: relative;
+    background: var(--cream);
+  }
+
+  .split-sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .split-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    will-change: transform, opacity;
+    transform-origin: center center;
+    transform: scale(0.26);
+    opacity: 0;
+  }
+
+  .split-bg::before {
+    content: "";
+    position: absolute;
+    inset: -10%;
+    background:
+      radial-gradient(48% 42% at 18% 22%, rgba(230, 137, 58, 0.45) 0%, transparent 62%),
+      radial-gradient(46% 44% at 84% 20%, rgba(74, 111, 133, 0.35) 0%, transparent 60%),
+      radial-gradient(60% 55% at 70% 88%, rgba(219, 55, 34, 0.22) 0%, transparent 65%),
+      linear-gradient(160deg, #f2ecd9 0%, #ece7d4 45%, #e2d9c6 100%);
+  }
+
+  .split-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .15;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .split-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(20, 19, 17, 0.06);
+    opacity: 0;
+    will-change: opacity;
+  }
+
+  .split-left,
+  .split-right {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    font-size: clamp(1.1rem, 2.6vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    will-change: transform, opacity;
+  }
+
+  .split-left {
+    right: 50%;
+    transform-origin: right center;
+    transform: translate(-6px, -50%);
+  }
+
+  .split-right {
+    left: 50%;
+    transform-origin: left center;
+    transform: translate(6px, -50%);
+  }
+
+  .noir-marquee {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    white-space: nowrap;
+    animation: marqueeScroll 16s linear infinite;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #8a4a1e, #c9752f 40%, #a04a2a 70%, #5c3d33);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .marquee-track .ast {
+    color: var(--accent);
+    -webkit-text-fill-color: var(--accent);
+    font-size: .5em;
+  }
+
+  @keyframes marqueeScroll {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ---------- intro ---------- */
+  .intro {
+    position: relative;
+    background: var(--cream);
+    padding: min(14vh, 120px) clamp(20px, 7vw, 108px) 0;
+  }
+
+  .intro-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    letter-spacing: .1em;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 26px;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1);
+  }
+
+  .intro-label svg {
+    width: 12px;
+    height: 12px;
+    color: var(--accent);
+    flex: none;
+  }
+
+  .intro-label.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-wrap {
+    height: 230vh;
+    position: relative;
+    margin-top: min(4vh, 40px);
+  }
+
+  .reveal-sticky {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-start;
+    padding: clamp(100px, 14vh, 150px) 0 120px;
+  }
+
+  .reveal-text {
+    font-size: clamp(1.5rem, .7rem + 3.6vw, 3.1rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    max-width: 22ch;
+  }
+
+  .reveal-text .word {
+    white-space: nowrap;
+  }
+
+  .reveal-text .ch {
+    color: rgba(20, 19, 17, 0.16);
+    transition: color .05s linear;
+  }
+
+  .reveal-text .ch.lit {
+    color: var(--ink);
+  }
+
+  @media (max-width:700px) {
+    .reveal-wrap {
+      height: 200vh;
+    }
+  }
+</style>
+
+<body>
+  <div class="noir">
+    <div class="edge-tick left"></div>
+    <div class="edge-tick right"></div>
+
+    <nav class="site-nav">
+      <div class="nav-left">
+        <a class="logo" href="#top"><span class="flip">N</span>OIR</a>
+        <a class="nav-home" href="#top">HOME
+          <svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M1 1l4 4 4-4" />
+          </svg>
+        </a>
+      </div>
+      <div class="nav-links">
+        <a href="#intro"><span class="roll"><span
+              class="stack"><span>PROJECT</span><span>PROJECT</span></span></span><span class="count">6</span></a>
+        <a href="#top"><span class="roll"><span class="stack"><span>STUDIO</span><span>STUDIO</span></span></span></a>
+        <a href="#top"><span class="roll"><span class="stack"><span>JOURNAL</span><span>JOURNAL</span></span></span></a>
+      </div>
+      <button class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="hero-bg"></div>
+      <div class="hero-scrim"></div>
+      <div class="hero-grain"></div>
+
+      <div class="hero-top">
+        <div class="badge">
+          <svg class="spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+            stroke-linecap="round">
+            <path d="M12 2v20M4 7l16 10M20 7L4 17" />
+          </svg>
+          CREATIVE DIGITAL AGENCY
+        </div>
+        <div class="thumb-stack">
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+        </div>
+      </div>
+
+      <h1 class="hero-headline">
+        <span>WE DESIGN DIGITAL</span>
+        <span>EXPERIENCES</span>
+        <span>PEOPLE REMEMBER</span>
+      </h1>
+
+      <div class="hero-bottom">
+        <div class="hero-brand">
+          <div class="wordmark"><span class="flip">N</span>OIR</div>
+          <div class="rating">
+            <span>4.9/5.0</span>
+            <span class="stars">★★★★★</span>
+          </div>
+          <div class="trusted">TRUSTED BY 480+ CLIENTS</div>
+        </div>
+
+        <div>
+          <p class="hero-copy">EVERY DETAIL HAS A PURPOSE. EVERY IDEA HAS A POINT OF VIEW. EVERY PROJECT IS BUILT TO
+            MAKE
+            AN IMPACT THAT PEOPLE REMEMBER.</p>
+          <div class="cta-row">
+            <span class="cta-label">LET'S TALK</span>
+            <a class="cta-pill" href="#top">
+              <span class="dot"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-meta">
+        <span>[CREATIVE DIGITAL STUDIO]</span>
+        <span style="justify-self:end">[BRAND &bull; DIGITAL &bull; MOTION]</span>
+        <span>[EST. 2026]</span>
+        <span class="clock"><span class="dot"></span><span id="clockTime">--:--</span></span>
+      </div>
+    </header>
+
+    <div class="split-wrap">
+      <div class="split-sticky">
+        <div class="split-bg" id="splitBg"></div>
+        <div class="split-scrim"></div>
+        <span class="split-left" id="splitLeft">NOIR CREATIVE STUDIO</span>
+        <span class="split-right" id="splitRight">DESIGN WITH PURPOSE</span>
+        <div class="noir-marquee" id="noirMarquee">
+          <div class="marquee-track">
+            <span>NOIR</span><span class="ast">✳</span>
+            <span>NOIR</span><span class="ast">✳</span>
+            <span>NOIR</span><span class="ast">✳</span>
+            <span>NOIR</span><span class="ast">✳</span>
+            <span>NOIR</span><span class="ast">✳</span>
+            <span>NOIR</span><span class="ast">✳</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="intro" id="intro">
+      <div class="intro-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+          <path d="M12 2v20M4 7l16 10M20 7L4 17" />
+        </svg>
+        intro
+      </div>
+
+      <div class="reveal-wrap">
+        <div class="reveal-sticky">
+          <p class="reveal-text" id="revealText"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+<script>
+  // fade+rise in the intro label the first time it scrolls into view
+  const introReveal = document.querySelectorAll('.intro-label');
+  const introObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        introObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  introReveal.forEach(el => introObserver.observe(el));
+
+  // live clock
+  const clockEl = document.getElementById('clockTime');
+  function tick() {
+    const d = new Date();
+    let h = d.getHours(); const m = d.getMinutes();
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if (h === 0) h = 12;
+    clockEl.textContent = h + ':' + String(m).padStart(2, '0') + ' ' + ap;
+  }
+  tick(); setInterval(tick, 1000 * 15);
+
+  // build the scroll-revealed statement, letter by letter
+  const sentence = "NOIR WAS BUILT FOR BRANDS READY TO THINK DIFFERENTLY, MOVE BOLDLY, AND CREATE DIGITAL EXPERIENCES THAT CONNECT WITH PEOPLE, INSPIRE ACTION, BUILD LASTING IMPRESSIONS, AND TURN BOLD IDEAS INTO DISTINCTIVE IDENTITIES THAT STAND OUT AND MATTER.";
+  const revealEl = document.getElementById('revealText');
+  const words = sentence.split(' ');
+  const chars = [];
+  words.forEach((w, wi) => {
+    const wordSpan = document.createElement('span');
+    wordSpan.className = 'word';
+    [...w].forEach(c => {
+      const chSpan = document.createElement('span');
+      chSpan.className = 'ch';
+      chSpan.textContent = c;
+      wordSpan.appendChild(chSpan);
+      chars.push(chSpan);
+    });
+    revealEl.appendChild(wordSpan);
+    if (wi < words.length - 1) revealEl.appendChild(document.createTextNode(' '));
+  });
+
+  const wrap = document.querySelector('.reveal-wrap');
+  function updateReveal() {
+    const rect = wrap.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const total = rect.height - vh;
+    let progress = total > 0 ? (-rect.top) / total : 0;
+    progress = Math.max(0, Math.min(1, progress));
+    const lit = Math.round(progress * chars.length);
+    for (let i = 0; i < chars.length; i++) {
+      if (i < lit) chars[i].classList.add('lit'); else chars[i].classList.remove('lit');
+    }
+  }
+
+  // split-and-scale text -> marquee crossfade, driven by scroll progress
+  const splitWrap = document.querySelector('.split-wrap');
+  const splitLeft = document.getElementById('splitLeft');
+  const splitRight = document.getElementById('splitRight');
+  const noirMarquee = document.getElementById('noirMarquee');
+  const splitBg = document.getElementById('splitBg');
+  const splitScrim = document.querySelector('.split-scrim');
+  function updateSplit() {
+    const rect = splitWrap.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const total = rect.height - vh;
+    let progress = total > 0 ? (-rect.top) / total : 0;
+    progress = Math.max(0, Math.min(1, progress));
+
+    // phase 1 (0 -> 0.55): grow + push apart toward the edges
+    const p1 = Math.max(0, Math.min(1, progress / 0.55));
+    const scale1 = 1 + p1 * 2.1;
+    const spread = p1 * 46; // vw pushed outward
+    splitLeft.style.transform = `translate(calc(-6px - ${spread}vw), -50%) scale(${scale1})`;
+    splitRight.style.transform = `translate(calc(6px + ${spread}vw), -50%) scale(${scale1})`;
+
+    // phase 2 (0.35 -> 1): fade split text out, fade marquee in and scale it up
+    const p2 = Math.max(0, Math.min(1, (progress - 0.35) / 0.65));
+    const splitOpacity = Math.max(0, 1 - p2 * 1.4);
+    splitLeft.style.opacity = splitOpacity;
+    splitRight.style.opacity = splitOpacity;
+
+    noirMarquee.style.opacity = p2;
+    noirMarquee.style.transform = `scale(${1 + p2 * 0.35})`;
+
+    // background image appears small (right alongside the small centered text)
+    // and grows to fill the frame as you keep scrolling
+    const bgScale = 0.26 + progress * 0.86;
+    const bgOpacity = Math.max(0, Math.min(1, progress * 9));
+    splitBg.style.transform = `scale(${bgScale})`;
+    splitBg.style.opacity = bgOpacity;
+    splitScrim.style.opacity = Math.min(0.5, progress * 0.6);
+  }
+
+  let ticking = false;
+  function onScroll() {
+    ticking = false;
+    updateReveal();
+    updateSplit();
+  }
+  document.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  window.addEventListener('resize', onScroll);
+  updateReveal();
+  updateSplit();
+
+  // mobile menu toggle
+  document.querySelector('.burger').addEventListener('click', () => {
+    document.querySelector('.nav-links').classList.toggle('open');
+  });
+</script>
